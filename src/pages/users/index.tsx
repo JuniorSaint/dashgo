@@ -1,106 +1,111 @@
 import {
-  Box,
   Button,
   Flex,
-  Heading,
+  HStack,
   Icon,
   Table,
+  Tbody,
+  Td,
+  Th,
   Thead,
   Tr,
-  Th,
-  Tbody,
-  Checkbox,
-  Td,
-  Text,
-  useBreakpointValue,
-  LinkBox,
 } from '@chakra-ui/react';
-import Link from 'next/link';
-import { RiAddLine, RiPencilLine } from 'react-icons/ri';
-import Header from '../../components/header';
-import { Pagination } from '../../components/Pagination';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { AiOutlineEdit } from 'react-icons/ai';
+import { BsTrash } from 'react-icons/bs';
+import { ModalDelete } from '../../components/ModalDelete';
 
-import SideBar from '../../components/SideBar';
+import { axiosApi } from '../../services/api';
+import { UserListProps } from './interfaceUsers';
 
-export default function UserList() {
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true,
-  });
+export default function ListUsers() {
+  const router = useRouter();
+
+  const [users, setUsers] = useState<UserListProps[]>([]);
+
+  const fetchData = async () => {
+    const retriveData = await axiosApi.get('users');
+
+    return retriveData.data;
+  };
+
+  useEffect(() => {
+    const getAllUsers = async () => {
+      const allUsers = await fetchData();
+      if (allUsers) setUsers(allUsers);
+    };
+    getAllUsers();
+  }, []);
+
   return (
-    <Box>
-      <Header />
-      <Flex width="100%" my="6" maxWidth={1480} mx="auto" px="6">
-        <SideBar />
-        <Box flex="1" borderRadius={8} backgroundColor="gray.800" padding="8">
-          <Flex
-            marginBottom="8"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Heading size="lg" fontWeight="normal">
-              Usuários
-            </Heading>
-            <Link href={'users/create'} passHref>
-              <Button
-                as="a"
-                size="sm"
-                fontSize="sm"
-                colorScheme="pink"
-                leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-              >
-                Criar novo usuário
-              </Button>
-            </Link>
-          </Flex>
-          <Table>
-            <Thead>
-              <Tr>
-                <Th px="6" color="gray.300" width="32px">
-                  <Checkbox colorScheme="pink" />{' '}
-                </Th>
-                <Th px="6" color="gray.300" width="32px">
-                  Usuário
-                </Th>
-                {isWideVersion && (
-                  <Th px="6" color="gray.300" width="32px">
-                    Data de Cadastro
-                  </Th>
-                )}
-                <Th width="8"></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td px="6">
-                  <Checkbox colorScheme="pink" />
-                </Td>
-                <Td>
-                  <Box>
-                    <Text fontWeight="bold">José Atanazio</Text>
-                    <Text fontSize="sm">junior@junior.com</Text>
-                  </Box>
-                </Td>
-                {isWideVersion && <Td>04 de Abril, 2022</Td>}
-                <Td>
-                  <Link href="/users" passHref>
-                    <Button
-                      as="a"
-                      size="sm"
-                      fontSize="sm"
-                      colorScheme="purple"
-                      leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
-                    >
-                      Editar
-                    </Button>
-                  </Link>
-                </Td>
-              </Tr>
-            </Tbody>
-          </Table>
-          <Pagination />
-        </Box>
+    <Flex>
+      <Flex>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Nome / Email</Th>
+              <Th>Tipo de usuário</Th>
+              <Th>Estado do usuário</Th>
+              <Th>Data da Criação</Th>
+              <Th>Ações</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {users.map(data => {
+              return (
+                <Tr key={data.id}>
+                  <Td>
+                    {data.userName} <br /> <span>{data.userEmail}</span>
+                  </Td>
+                  <Td>{data.userType}</Td>
+                  <Td>{data.isActive === true ? 'Ativo' : 'Inativo'}</Td>
+                  <Td>
+                    {' '}
+                    {new Intl.DateTimeFormat('pt-BR').format(
+                      new Date(data.createdAt),
+                    )}
+                  </Td>
+                  <Td>
+                    <HStack spacing="10px">
+                      <Button
+                        backgroundColor="gray.900"
+                        _hover={{ bg: 'gray.800' }}
+                      >
+                        {' '}
+                        <Icon
+                          as={AiOutlineEdit}
+                          fontSize="25px"
+                          color="blue.500"
+                        />
+                      </Button>
+                      <Button
+                        onClick={() => (
+                          <ModalDelete
+                            nameDelete={data.userName}
+                            typeDelete="o usuário"
+                            url="users"
+                            id={data.id}
+                          />
+                        )}
+                        backgroundColor="gray.900"
+                        _hover={{ bg: 'gray.800' }}
+                        _active={{
+                          borderColor: 'gray.900',
+                        }}
+                      >
+                        {' '}
+                        <Icon as={BsTrash} fontSize="25px" color="red.500" />
+                      </Button>
+                    </HStack>
+                  </Td>
+                </Tr>
+              );
+            })}
+            <Tr></Tr>
+          </Tbody>
+        </Table>
       </Flex>
-    </Box>
+    </Flex>
   );
 }

@@ -1,3 +1,4 @@
+import { HamburgerIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -6,12 +7,9 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerOverlay,
-  Icon,
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
-
-import { HamburgerIcon } from '@chakra-ui/icons';
 
 import SideBarNav from './SidebarNav';
 

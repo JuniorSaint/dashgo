@@ -1,8 +1,8 @@
 import { Flex, useBreakpointValue } from '@chakra-ui/react';
 
-import Profile from './Header/Profile';
 import Logo from './Header/logo';
 import NotificationNav from './Header/notificationNav';
+import Profile from './Header/Profile';
 import SidebarToggle from './SideBar/SidebarToggle';
 
 export default function Header() {

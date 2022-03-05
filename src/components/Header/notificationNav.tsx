@@ -1,4 +1,4 @@
-import { Flex, Input, HStack, Icon } from '@chakra-ui/react';
+import { Flex, HStack, Icon, Input } from '@chakra-ui/react';
 import { useState } from 'react';
 import { RiNotificationLine, RiUserAddLine } from 'react-icons/ri';
 
